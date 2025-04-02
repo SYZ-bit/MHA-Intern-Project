@@ -1,0 +1,77 @@
+---
+title: SQL injection
+authors: [yanzhang]
+sidebar_position: 0
+---
+import CodeBlock from '@theme/CodeBlock';
+import SQLExample1 from '!!raw-loader!@site/src/snippets/example.py';
+import SQLExample2 from '!!raw-loader!@site/src/snippets/example2.py';
+import SQLExample3 from '!!raw-loader!@site/src/snippets/example3.py';
+import SQLExample4 from '!!raw-loader!@site/src/snippets/example4.py';
+import SQLExample5 from '!!raw-loader!@site/src/snippets/example5.py';
+
+# SQL Injection
+
+## Description
+
+### What is an SQL Injection?
+
+**SQL injection** is the insertion of specially crafted input into a legitimate SQL query to execute malicious code in a database. It usually occurs via some input data from a user to the application. By executing malicious SQL code into a back-end databse, a malicious actor can bypass authentication to access unauthorized information. Unauthorized information can include sensitive company data such as Personally Identifiable Information of customers or Credit Card information can be displayed, tampered with or even destroyed. 
+
+
+## Scenario
+
+To understand what an SQL Injection attack might look like, let's consider the following scenario:
+
+Here, the statement is meant to select a user with a given user ID:
+<CodeBlock language="python">{SQLExample1}</CodeBlock>
+
+**BUT** what if the attacker enters an input: "105 OR 1=1" like this?:
+
+<CodeBlock language="python">{SQLExample2}</CodeBlock>
+
+Since the condition **OR 1=1** is always true, this code is valid and will retun all rows from the table. If the table consists of a list of users' credentials, the attacker will have disclosed and manipulate all the information within even though he is not authorized to do so.
+
+**Subverting application logic** through SQL can lead to unpredictable outcomes dependding on the context of SQL statement and strategy of attackers.
+
+There are well-known exploitation techniques that attackers leverage depending on the vulnerability within the implementation of the code:
+
+- Manipulating an SQL query logic to bypass access controls.
+- Retrieving hidden data to return additional results, including data from other tables within the databases, e.g., leveraging the UNION keyword.
+- Executing arbitrary SQL code in the context of the database whether stacked queries are allowed.
+- Accessing files and executing commands in the operating system, depending on the vulnerable code and the database management system.
+
+The following is another example of subverting application logic to bypass access controls.
+
+Usernames and passwords are the most common method for logging into applications. In a typical scenario, a user enters the username "user" and the password "secret." The application then executes an SQL query to validate these credentials.
+<CodeBlock language="python">{SQLExample3}</CodeBlock>
+The login is considered successful if the query retrieves the user's details. If no matching details are found, access is denied.
+By exploiting single quotes and SQL comments (--), an attacker can bypass authentication and log in as any user without needing a password. This works by effectively removing the password check from the WHERE clause of the query.
+
+The following example demonstrates this technique. If an attacker enters administrator'-- in the username field while leaving the password field empty, the resulting SQL statement would be:
+<CodeBlock language="python">{SQLExample4}</CodeBlock>
+The database processes this statement while ignoring the commented-out portion, executing only the remaining valid SQL code:
+<CodeBlock language="python">{SQLExample5}</CodeBlock>
+Because the modified query always retrieves the administrator's details, the attacker can log in successfully without knowing the correct password.
+
+## Impact
+Let's dig deeper into the consequences of successful SQL Injection AttacK:
+
+1. **Data Breach and Theft**
+
+Attackers retrieve PII, lists of usernames, password, financial record. These stolen data can be sold on the dark web or used for identity theft and fraud. Data breaches for businesses often lead to huge financial losses and lawsuits
+
+2. **Data Manipulation**
+
+Beyond data theft, attackers can also delete or remove critical information from the database. Such data loss can disrupt business operations, cause downtime, and be costly and time-consuming to recover, especially without proper backups in place.
+
+3. **System Takeover**
+
+SQL injection can allow attackers to gain full control over a system, enabling them to manipulate databases, applications, and connected systems. In severe cases, this can lead to a complete system takeover, requiring a full rebuild to restore functionality. Attackers may also read and write files on the server, potentially installing backdoors for persistent access and further exploitation.
+
+## Prevention
+
+To prevent SQL injection vulnerabilities, developers should use **parameterized queries**, ensuring that user inputs are treated as data rather than part of the SQL command.
+
+For legacy systems, escaping inputs is essential before incorporating user data into queries. While Object-Relational Mappers (ORMs) simplify this process, they are not a complete solution. Key security measures remain crucial: validating untrusted data, avoiding query concatenation unless absolutely necessary, and restricting SQL account privileges to the minimum is required.
+

@@ -1,0 +1,24 @@
+[
+    {
+        "categoryId":"codereview101_inputValidation",
+        "categoryName":"Input Validation",
+        "categoryDetails":"categoryInputValidation.md",
+        "questions":[
+            {
+                "questionId":"inputValidation.q1",
+                "language":"java",
+                "lineToHighlight":3,
+                "question":"Which of the following code snippets prevents a vulnerability?",
+                "snippets":[
+                    "snipInputValidation1.java",
+                    "snipInputValidation2.java"
+                ],
+                "answer":1,
+                "correctReasoning":"You're right! The code sample is preventing a vulnerability by using input allow listing.",
+                "incorrectReasoning": "Incorrect! While there is some validation, it is based on deny listing and will still allow command injection (ex. `rm -rf /`)."
+            }
+        ]
+
+    }
+
+]

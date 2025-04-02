@@ -1,0 +1,50 @@
+---
+title: SQL injection Quiz
+authors: [yanzhang]
+sidebar_position: 1
+---
+
+
+import { Quiz } from '@site/src/components/QuizComponent';
+import CodeBlock from '@theme/CodeBlock';
+import CorrectCode from '!!raw-loader!@site/src/snippets/quiz1.py';
+import IncorrectCode from '!!raw-loader!@site/src/snippets/quiz2.py';
+
+# Programming Quiz
+
+## Question 1
+
+Here’s Two Python snippet:
+
+First Code Snippet:
+<CodeBlock language="python">{CorrectCode}</CodeBlock>
+
+Second Code Snippet:
+<CodeBlock language="python">{IncorrectCode}</CodeBlock>
+
+Which of these code snippets is **not** vulnerable to SQL Injection?
+<Quiz 
+  options={[ 
+    'First Snippet', 
+    'Second Snippet' 
+    
+  ]} 
+  correctAnswer="First Snippet" 
+  correctReply="Good Job, you have performed parameterized queries to prevent SQL Injection" 
+  incorrectReply={<>Incorrect, refer to <a href="http://localhost:3000/docs/MHA/SQLinjection">this document</a> for more info.</>}
+
+/>
+
+
+## Question 2
+
+<Quiz 
+  question="What does HTML stand for?"
+  options={[
+    'Hyper Text Markup Language', 
+    'Home Tool Markup Language', 
+    'Hyperlinks and Text Markup Language'
+  ]}
+  correctAnswer="Hyper Text Markup Language"
+/>
+
