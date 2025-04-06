@@ -1,0 +1,42 @@
+---
+title: Cross-Site Scripting Quiz
+authors: [yanzhang]
+sidebar_position: 3
+---
+
+import { Quiz } from '@site/src/components/QuizComponent';
+import CodeBlock from '@theme/CodeBlock';
+import CorrectCode from '!!raw-loader!@site/src/snippets/quizxss1.js';
+import IncorrectCode from '!!raw-loader!@site/src/snippets/quizxss2.js';
+
+# XSS Quiz
+
+## Question 1
+
+Below codes are written in JavaScript. These Javascript code are designed to fetch and display a user's profile information such as his display name and avatar image.
+One of the codes snippets are vulnerable to XSS attacks.
+
+Here’s Two Python snippet:
+
+First Code Snippet:
+<CodeBlock language="python">{CorrectCode}</CodeBlock>
+
+Second Code Snippet:
+<CodeBlock language="python">{IncorrectCode}</CodeBlock>
+
+Can you tell which code snippet is **safer**?
+<Quiz 
+  options={[ 
+    'First Snippet', 
+    'Second Snippet' 
+    
+  ]} 
+  correctAnswer="First Snippet" 
+  correctReply="Good Job, using innerText instead of innerHTML prevents XSS attacks. innerHTML does not differentiate between content and executable code" 
+  incorrectReply={<>Incorrect, refer to <a href="http://localhost:3000/docs/MHA Secure Coding/XSS">this document</a> for more info.</>}
+
+/>
+
+
+
+

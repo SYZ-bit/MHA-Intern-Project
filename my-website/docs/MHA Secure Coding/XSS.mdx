@@ -1,0 +1,41 @@
+---
+title: Cross-Site Scripting
+authors: [yanzhang]
+sidebar_position: 2
+---
+
+# Cross-Site Scripting
+
+Cross-Site Scripting (also known as XSS) attacks are a type of injection, in which malicious scripts are injected into trusted websites.
+XSS attacks occurs when an attacker send malicious code into the website, which allows them to execute code in the victim's browser, potentially stealing data or hijacking user sessions.
+Flaws that allow these attacks are quite widespread and any web application that uses input from a user can have these flaws if the output it generates is not validated or encoded.
+
+When an attacker use XSS to send a malicious script to unsuspecting user, the end user's browser has no way to know what the script should not be trusted, and will execute the malicious script. 
+The end user's browser will think the script came from a trusted source, the malicious script can access any cookies, session tokens, or other sensitive information retained by the browser and used with that site.
+These script can even rewrite the content of the HTML page.
+
+## Types of XSS
+
+### Reflected XSS
+
+Reflected XSS attacks arise when a web server reflects an injected script, such as a search result, an error message, or any other response that includes some or all of the input sent to the server as part of the request.
+
+The attack is then delivered to the victim through another route (e.g., e-mail or an alternative website), thus tricking the user into clicking on a malicious link. The injected code travels to the vulnerable website, which reflects the attack payload back to the user's browser. The browser then executes the code because it came from a "trusted" server.
+
+### Stored XSS
+
+In the Stored XSS attack, the injected script is stored on the target application as legitimate content, such as a message in a forum or a comment in a blog post. The injected code is stored in the database and sent to the users when it is retrieved, thus executing the attack payload in the victim's browser.
+
+### DOM-based XSS
+
+## Impact
+
+Cross site scripting attacks can have devastating consequences. Code injected into a vulnerable application can exfiltrate data or install malware on the user’s machine. Attackers can masquerade as authorized users via session cookies, allowing them to perform any action allowed by the user account.
+
+XSS can also impact a business’s reputation. An attacker can deface a corporate website by altering its content, thereby damaging the company’s image or spreading misinformation. A hacker can also change the instructions given to users who visit the target website, misdirecting their behavior. This scenario is particularly dangerous if the target is a government website or provides vital resources in times of crisis.
+
+## Prevention
+
+### Input Validation
+
+### Output Encoding
