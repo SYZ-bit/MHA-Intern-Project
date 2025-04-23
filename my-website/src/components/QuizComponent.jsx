@@ -4,7 +4,7 @@ import { useState } from 'react';
 export function Quiz({ question, options, correctAnswer,correctReply,incorrectReply }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState('');
-
+  
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
     if (answer === correctAnswer) {
@@ -28,3 +28,5 @@ export function Quiz({ question, options, correctAnswer,correctReply,incorrectRe
     </div>
   );
 }
+
+
