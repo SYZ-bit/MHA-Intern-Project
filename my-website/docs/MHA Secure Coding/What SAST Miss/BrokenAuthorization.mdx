@@ -1,0 +1,97 @@
+---
+title: Broken Authorization
+authors: [yanzhang]
+sidebar_position: 0
+---
+
+# Broken Authorization
+
+**Broken Authorization**—also known as **Broken Access Control** or **Privilege Escalation**—is a broad category of security flaws that stem from improperly implemented authorization checks. These flaws occur when an application fails to correctly enforce which users are allowed to access specific content or perform certain actions based on their assigned roles and privileges.
+
+In a well-designed system, access permissions are granted or denied according to the user’s role and authorization level. For example, in a web application, access control typically works in conjunction with authentication and session management. 
+
+However, designing effective authorization mechanisms in dynamic and evolving systems is challenging. As applications grow and change—new features are added, user roles shift, users are onboarded or removed, and authentication methods evolve—authorization logic often becomes inconsistent or fragmented.
+
+Because these decisions are made by people, not automated systems, the risk of misconfiguration is high. As a result, broken authorization vulnerabilities can appear across a wide range of software, including web applications, databases, operating systems, and other platforms that rely on secure access control.
+
+# Impact
+
+In a successful attack, an attacker may gain unauthorized access to sensitive content, modify or delete data, perform restricted actions, or even take full control of the application’s administrative functions. Once the attacker compromises an account, the extent of the damage depends entirely on the privileges associated with that user.
+
+A real-world example of this kind of vulnerability is the breach of CloudPets, a toy company. Due to the absence of proper authorization controls, attackers were able to access and exfiltrate voice messages recorded by children through the company's smart toys. These sensitive recordings, stored insecurely in the cloud, were later held for ransom—highlighting how human error in access control design can lead to serious consequences.
+
+# Scenario
+
+From the perspective of the user, there are two main categories of authorization controls to consider:
+
+-**Horizontal Authorization Controls**
+
+-**Vertical Authorization Controls**
+
+## Horizontal Authorization Control Bypass
+
+**Bypassing Horizontal Authorization Controls** refers to the scenario where a user with limited privileges is able to access the data or functionality of other users who have the same level of access.
+
+For instance, consider a web application that retrieves account details using a method call without validating the input. If the application accepts an accountId parameter from the HTTP request and fails to verify that the requester owns that account, an attacker could simply alter the accountId value to view or manipulate information belonging to other users.
+
+In this case, the application’s failure to validate ownership before processing the request allows unauthorized access between users at the same privilege level.
+
+```
+http://vulnerableapp.com/user/account?accountId=7800001
+
+http://vulnerableapp.com/user/account?accountId=7800002
+
+etc.
+```
+Insecure Direct Object References, or IDOR, is a related scenario involving user-supplied input being utilized to access objects directly.
+
+## Vertical Authorization Controls
+
+**Bypassing Vertical Authorization Controls** occurs when a user with limited permissions is able to escalate their privileges and gain access to functions or areas meant for higher-level users, such as administrators.
+
+For example, an attacker might manually navigate to a URL intended only for admins—like an admin dashboard—without actually having administrative rights. If the application does not properly enforce access restrictions, the attacker could successfully load and interact with the admin page, despite not being authorized to do so.
+
+```
+http://vulnerableapp.com/user/account
+
+http://vulnerableapp.com/admin/panel
+```
+
+If the application does not check whether the role of the session user matches the role required to access the resource, a user without admin privileges will be able to access the page by simply knowing/guessing the target URL and browsing to it.
+
+# Prevention
+
+To prevent Broken Authorization Control attacks, developers should begin by evaluating the application's access control needs and defining a security policy that aligns with those requirements. This process should involve creating an access control matrix that outlines which user roles exist, what areas of the system they can access, and what actions they are permitted or restricted from performing. Implementing Role-Based Access Control (RBAC) helps enforce these permissions consistently at critical points in the application.
+
+In web applications, it's crucial to ensure that all access control rules are enforced on the server side—not just in the user interface. Every page, route, and API endpoint should validate a user’s permissions to prevent unauthorized users from bypassing restrictions simply by manipulating URLs or sending crafted requests.
+
+# Python
+
+## Vulnerable Example
+
+```
+# Route /admin/init
+def admin_init():
+    cursor.execute("DROP DATABASE analytics")
+    return 'Database has been deleted to be reinstalled'
+```
+
+The /admin/init URI is available to everyone and should be protected by an authorization mechanism so that it can't be abused by malicious actors.
+
+## Prevention
+
+Flask-Session is an extension for Flask that adds support for server-side sessions to a web application.
+
+```
+from flask import Flask, session
+from flask_session import Session
+
+app = Flask(__name__)
+app.config.from_object(__name__)
+Session(app)
+
+@app.route('/admin/init')
+def admin_init():
+    if not session.get('is_superuser'):
+      abort(401)
+```

@@ -1,7 +1,7 @@
 // src/components/QuizComponent.jsx
 import { useState } from 'react';
 
-export function Quiz({ question, options, correctAnswer,correctReply,incorrectReply }) {
+export function Quiz({ question, options, correctAnswer,correctReply,  }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState('');
   
@@ -28,5 +28,4 @@ export function Quiz({ question, options, correctAnswer,correctReply,incorrectRe
     </div>
   );
 }
-
 

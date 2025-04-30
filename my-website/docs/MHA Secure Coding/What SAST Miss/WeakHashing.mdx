@@ -1,0 +1,76 @@
+---
+title: Weak Hashing Algorithm
+authors: [yanzhang]
+sidebar_position: 1
+---
+
+# Hashing Algorithm
+
+**Hash Functions** are mathematical algorithms that transform a variable amount of input data into a fixed-size byte array. The result, known as a "hash" or "hash value," serves as a unique identifier for the original data, similar to a fingerprint. For example, running two different words through a hashing algorithm (such as MD5) produces unique hash values of the same fixed size:
+```
+md5("foo") -> acbd18db4cc2f85cedef654fccc4a4d8
+```
+```
+md5("bar") -> 37b51d194a7513e45b56f6524f2d51f2
+```
+
+**Hashing algorithms** are essential in many areas of information security, including signing digital certificates, creating message authentication codes (MACs), and hashing passwords for authentication.
+
+Strong hash functions possess several key properties:
+
+1. Avalanche Effect: Even a small change in the input data (even a single byte) causes a significantly different hash value.
+
+2. Pre-image Resistance: It should be computationally infeasible to reverse the hash back to the original data.
+
+3. Second Pre-image Resistance: It should be hard to find a second input that produces the same hash as a given input.
+
+4. Collision Resistance: It should be difficult to find two different inputs that produce the same hash. While collisions are theoretically possible, the goal is to make them highly unlikely.
+
+These properties define the foundation of strong hash functions. However, advancements in computational power and ongoing research into vulnerabilities often lead to the deprecation of previously trusted algorithms. Weak hash functions are those proven to be insecure or broken and should no longer be used.
+
+It's also important to note that even strong hash algorithms may not be appropriate for password hashing. Password hashing requires additional considerations:
+
+- **Computational Intensity**: The hashing process must be deliberately slow to thwart brute-force and dictionary attacks.
+
+- **Salting**: A unique salt should be added to the input data to ensure that identical inputs produce different hash values, protecting against Rainbow Table attacks.
+
+# Impact
+
+The consequences of exploiting weak hashing algorithms can be severe, limited only by the value of the compromised data and the attacker’s creativity in using it. Numerous major data breaches highlight the dangers of choosing poor hashing methods. A notable example is Yahoo!’s massive data breach, which was publicly disclosed in 2016—two years after it occurred. 
+The breach exposed data from over 500 million user accounts, including dates of birth, unencrypted security questions and answers, and hashed passwords. Unfortunately, the passwords were protected using MD5, a widely known weak hashing algorithm. Had a stronger, modern algorithm been used, the stolen passwords might have remained useless to the attackers.
+
+# Prevention
+
+Given their essential role in securing numerous online processes, it is crucial for both organizations and individuals using hashing algorithms to stay current with the latest standards. Regularly updating to modern, secure hashing algorithms is the only effective defense against the risks posed by outdated or vulnerable algorithms.
+
+Several hashing algorithms once considered secure are now known to be unsafe or completely compromised:
+
+- MD5: Vulnerable to collision attacks since the mid-1990s and now considered entirely broken.
+
+- SHA-1: Deemed insecure against well-funded attackers as early as 2005, and officially deprecated by NIST in 2011.
+
+- RIPEMD & RIPEMD-128: Found to be insecure, with collisions documented as early as 2004.
+
+- Whirlpool: Subject to a rebound attack that demonstrated collisions in 2009.
+
+In contrast, current hashing algorithms recognized as secure include:
+
+- RIPEMD-160/256/320: Various versions offering different levels of security, all currently considered strong.
+
+- BLAKE2 and BLAKE3: Designed to be faster than SHA variants and resistant to length extension attacks.
+
+- SHA-2: Widely trusted, resistant to collisions, and most versions are also protected against length extension.
+
+- SHA-3: The latest in the SHA family, designed to resist both collision and length extension attacks.
+
+For password hashing specifically, it is recommended to use algorithms designed with additional protections against brute-force attacks:
+
+- bcrypt: Commonly used and widely supported.
+
+- scrypt: Built to be computationally intensive and resistant to large-scale brute-forcing.
+
+- argon2: Winner of the 2015 Password Hashing Competition; allows tuning of computational cost.
+
+- PBKDF2: A key derivation function endorsed by NIST.
+
+Regardless of the algorithm chosen, it’s important to apply an appropriate work factor—such as a sufficiently high iteration count—to further enhance resistance to attacks.

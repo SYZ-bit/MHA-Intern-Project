@@ -1,0 +1,41 @@
+---
+title: Broken Authentication
+authors: [yanzhang]
+sidebar_position: 2
+---
+# Broken Authentication
+
+**Broken Authentication**, different from **Broken Authorization** is a critical security risk that can expose applications to attacks where malicious actors gain access to passwords, session tokens, or cryptographic keys. If successful, such an attack can result in identity theft, unauthorized access to user accounts, or even full system compromise.
+
+At its core, this vulnerability occurs when an attacker is able to bypass the application's authentication mechanism due to flaws like poor configuration, logic errors, or software bugs.
+
+This issue isn’t limited to web applications—any software that manages user access, including databases and network infrastructure, can be affected. Despite being a long-standing concern in cybersecurity, authentication flaws remain common. In many cases, attackers don’t even need advanced skills to exploit them, as authentication controls are often implemented inconsistently—or worse, not implemented at all.
+
+Because of its severity and prevalence, Broken Authentication has been listed as a top web application security risk in the OWASP Top 10 since 2013.
+
+# Impact
+
+A successful attack could allow a malicious actor to take full control of the web application, potentially granting them administrator privileges and giving them unrestricted access to all data. This compromises the application's confidentiality, integrity, and availability.
+
+# Scenarios
+
+There are a variety of different Broken Authentication instances that attackers can leverage depending on the vulnerability within the implementation of the identity or access control. Some methods of exploitation and potential weaknesses include:
+
+- Functionalities requiring authentication lack mechanisms or implement insufficient protections.
+- Broken object-level protection mechanisms allow unauthenticated users to access private resources.
+- Missing protections against dictionary-based attacks or credential reuse.
+- The application permits the use of weak passwords, such as "password123" or "123456".
+- Exposure of session IDs, allowing attackers to reuse valid session IDs to hijack an active user's session.
+
+# Prevention
+The utilization of updated security controls that ensure user identity, authentication, and session management is crucial if one is to prevent authentication attacks successfully. Yet, very often, a weak authentication is the result of logical errors or oversights.
+
+The following controls can strengthen your authentication when appropriately implemented:
+
+- Implement **Multi-Factor Authentication (MFA)**. MFA can significantly reduce the risk of unauthorized access by requiring users to provide multiple forms of identification (something they know, something they have, or something they are). The other form of verification can be a code sent to a mobile device, a fingerprint, or a hardware token.
+- Implement an effective password policy that disallows the use of weak or overused/common passwords.
+- Implement password retry lockout.
+- Protect session IDs, such as cookies or tokens, and rotate them following successful logins.
+- Ensure rules around session ID invalidation during logout or inactivity are correctly implemented.
+- Use community-vetted frameworks, libraries, and patterns to embed secure authentication in your software.
+- Implement additional perimeter access control security such as IP allow-list and use of bastion hosts.

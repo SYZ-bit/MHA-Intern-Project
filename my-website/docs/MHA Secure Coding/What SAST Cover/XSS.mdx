@@ -36,6 +36,11 @@ XSS can also impact a business’s reputation. An attacker can deface a corporat
 
 ## Prevention
 
+XSS attacks can be mitigated by performing appropriate server-side validation and escaping. Remediation relies on performing Output Encoding (e.g., using an escape syntax) for the type of HTML context into which untrusted data is reflected.
+
 ### Input Validation
 
+- Exact Match: Only accept values from a finite list of known values.
+- Allow list: If a list of all the possible values can't be created, accept only known good data and reject all unexpected input.
+- Deny list: If an allow-list approach is not feasible (on free-form text areas, for example), reject all known bad values.
 ### Output Encoding

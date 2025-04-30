@@ -1,0 +1,45 @@
+---
+title: Buffer Overflow
+authors: [yanzhang]
+sidebar_position: 4
+---
+
+# Buffer Overflow
+
+**Buffer overflow** condition exists when a program attempts to put more data in a buffer than it can hold or when a program attempts to put data in a memory area past a buffer. In this case, a buffer is a sequential section of memory allocated to contain anything from a character string to an array of integers. Writing outside the bounds of a block of allocated memory can corrupt data, crash the program, or cause the execution of malicious code.
+
+Most software developers know what a buffer overflow vulnerability is, but buffer overflow attacks against both legacy and newly-developed applications are still quite common. Part of the problem is due to the wide variety of ways buffer overflows can occur, and part is due to the error-prone techniques often used to prevent them.
+
+# Description
+
+While most software developers are familiar with buffer overflow vulnerabilities, these types of attacks still frequently affect both legacy systems and modern applications. This ongoing issue stems from the many different ways buffer overflows can occur, combined with the fact that common prevention techniques are often unreliable or easy to implement incorrectly.
+
+Buffer overflows can be difficult to detect, and even harder to exploit successfully. Despite this, attackers have managed to find and exploit buffer overflows in a wide range of software products and components.
+
+In a typical buffer overflow attack, an attacker sends more data than a program's buffer—often located on the stack—can handle. This extra data overwrites information on the call stack, including the function’s return address. The attacker carefully crafts the input so that, when the function returns, it redirects execution to malicious code embedded within the overflow data.
+
+# Scenario
+
+Example of code snippet vulnerable to **Buffer Overflow**:
+
+```
+printf("Enter the password:\n");
+gets(userPass);
+
+if(strncmp(userPass,PASSWORD,9)==0){
+    printf("PASSWORD VERIFIED\n");
+}
+```
+
+## Prevention
+
+In order to prevent **Buffer Overflow** Vulnerability, use a function that controls the size of the input ('fgets').
+
+```
+printf("Enter the password:\n");
+fgets(userPass,9,stdin);
+
+if(strncmp(userPass,PASSWORD,9)==0){
+    printf("PASSWORD VERIFIED\n");
+}
+```
