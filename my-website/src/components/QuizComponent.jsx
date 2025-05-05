@@ -1,7 +1,7 @@
 // src/components/QuizComponent.jsx
 import { useState } from 'react';
 
-export function Quiz({ question, options, correctAnswer,correctReply,  }) {
+export function Quiz({ question, options, correctAnswer, correctReply, incorrectReply }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState('');
   

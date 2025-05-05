@@ -1,0 +1,33 @@
+---
+title: Broken Authorization Example
+authors: [yanzhang]
+sidebar_position: 0
+---
+
+import { Quiz } from '@site/src/components/QuizComponent';
+
+# Scenario
+
+## Broken Authorization in Blog Post Edition
+
+The following scenario will showcase a **Broken Authorization** vulnerability that allows any authenticated user edit any blog post
+
+IMAGINE you are a user and are navigating to this website:*http://www.vulnerableapp.com/.*
+
+![](/img/BrokenAuthorization1.png)
+
+You login using the user credentials that you have/known on the login page. Browsing to the "Ski Guides Samoens" blog post that you owns, and edit the post to observe the URL returned. Take note that you has not made any other posts.
+
+By modifying the URL to try and access the edit page of another user's blog posts as highlighted below
+
+![](/img/BrokenAuthorization2.png)
+
+By changing the URL from "vulnerableapp.com/edit/4/" to "vulnerableapp.com/edit/3/" , the user would be able to access the edit page of another user's blog posts.
+
+![](/img/BrokenAuthorization3.png)
+
+Switching to the IDE and observing the edit_post() function, it was shown that the blog post is fetched solely based on its ID.
+
+![](/img/BrokenAuthorization4.png)
+
+
