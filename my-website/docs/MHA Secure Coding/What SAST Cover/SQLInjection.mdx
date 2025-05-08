@@ -24,12 +24,14 @@ import SQLExample5 from '!!raw-loader!@site/src/snippets/example5.py';
 To understand what an SQL Injection attack might look like, let's consider the following scenario:
 
 Here, the statement is meant to select a user with a given user ID:
-<CodeBlock language="python">{SQLExample1}</CodeBlock>
+```python
+SELECT * FROM Users WHERE UserId= 105;
+```
 
-**BUT** what if the attacker enters an input: "105 OR 1=1" like this?:
-
-<CodeBlock language="python">{SQLExample2}</CodeBlock>
-
+**BUT** what if the attacker enters an input: "105 OR 1=1" like this? :
+```python
+SELECT * FROM Users WHERE UserId= '105 OR 1=1' ;
+```
 Since the condition **OR 1=1** is always true, this code is valid and will retun all rows from the table. If the table consists of a list of users' credentials, the attacker will have disclosed and manipulate all the information within even though he is not authorized to do so.
 
 **Subverting application logic** through SQL can lead to unpredictable outcomes dependding on the context of SQL statement and strategy of attackers.
@@ -44,14 +46,21 @@ There are well-known exploitation techniques that attackers leverage depending o
 The following is another example of subverting application logic to bypass access controls.
 
 Usernames and passwords are the most common method for logging into applications. In a typical scenario, a user enters the username "user" and the password "secret." The application then executes an SQL query to validate these credentials.
-<CodeBlock language="python">{SQLExample3}</CodeBlock>
+```python
+SELECT * FROM users WHERE username = 'user' AND password = 'secret'
+```
+
 The login is considered successful if the query retrieves the user's details. If no matching details are found, access is denied.
 By exploiting single quotes and SQL comments (--), an attacker can bypass authentication and log in as any user without needing a password. This works by effectively removing the password check from the WHERE clause of the query.
 
 The following example demonstrates this technique. If an attacker enters administrator'-- in the username field while leaving the password field empty, the resulting SQL statement would be:
-<CodeBlock language="python">{SQLExample4}</CodeBlock>
+```python
+SELECT * FROM users WHERE username = 'administrator'--' AND password = '
+```
 The database processes this statement while ignoring the commented-out portion, executing only the remaining valid SQL code:
-<CodeBlock language="python">{SQLExample5}</CodeBlock>
+```python
+SELECT * FROM users WHERE username = 'administrator'
+```
 Because the modified query always retrieves the administrator's details, the attacker can log in successfully without knowing the correct password.
 
 ## Impact

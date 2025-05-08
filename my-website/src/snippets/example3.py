@@ -1,1 +1,0 @@
-SELECT * FROM users WHERE username = 'user' AND password = 'secret'
