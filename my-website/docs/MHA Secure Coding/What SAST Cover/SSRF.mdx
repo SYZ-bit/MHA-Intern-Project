@@ -3,3 +3,71 @@ title: Server-Side Request Forgery
 authors: [yanzhang]
 sidebar_position: 5
 ---
+
+# Server-Side Request Forgery
+
+## Description
+
+Server-Side Request Forgery (SSRF) occurs when server-side request input is not adequately controlled. Server-Side Request Forgery attacks are a type of security vulnerabilities that allows an attacker to manipulate parameters in a web application to make unauthorized requests from the server itself.
+These requests can be directed towards internal systems that are normally protected from external access by a firewall.
+
+A common scenario involves a server-side application that makes HTTPS requests to external services to support certain features- such as calling an API, downloading external resources, or retrieving user data from platforms like Facebook or Gravatar.
+Attackers can exploit this functionality to redirect the request to unintended targets, either to reach other external services or to misuse the server's own privileges, potentially gaining access to sensitive data.
+
+At its core, SSRF takes advantage of the inherent trust placed in internal systems. By manipulating this trust, attackers can escalate their reach, targeting backend infrastructure or even the server itself.
+
+## Impact
+
+A successful SSRF attack can allow a malicious actor to move laterally within the internal network, bypassing firewall protections and potentially gaining unrestricted access to backend systems.
+This can lead to a complete compromise of the application's **confidentiality, integrity, and availability**. 
+
+The impact of SSRF attacks can be severe, depending on the sensitivity and volume of data exposed. A notable example  is the 2019 Capital One Breach, where attackers exploited SSRF among other vulnerabilities to access personal information- such as names, addresses, phone numbers, self-reported income, credit scores, and payment histories- of about 100 million U.S. customers (around one-third of the population) and 6 million Canadian customers.
+
+As is often the case in cybersecurity incidents, human error was a contributing factor. In the above instance, the attack stemmed from a misconfigured firewall that allowed unauthorized access.
+
+## Scenario
+
+Web applications typically perform client-side requests using built-in language functions that support standard protocols like HTTP, making it easy for developers to implement these features.
+
+Depending on how the server handles such vulnerable request, an attacker may be able to redirect them to external websites. In some cases, the attacker can even change to different protocols and, for example use *file://* protocol, which is often enabled by default, to access and read files directly from the server's filesystem.
+
+SSRF attacks remain especially dangerous because attackers take advantage of server's position within the network and active firewall rules. An attacker can craft arbitrary requests through the server can bypass external network restrictions and interact with internal systems that are otherwise inaccessible.
+For example, the server may be allowed to communicate with internal management tools, used for updates or system monitoring, that are blocked from external access.
+
+Moreover, attackers can  analyze response times of SSRF requests to identify open, closed, or filtered TCP ports. By sending a relatively small number of carefully timed requests, they can effectively map the internal network and identify potential targets for future exploitation.
+
+## Prevention
+
+If the application relies on a specific set of trusted URLs, developers should enforce a strict allow list based on hostnames or IP addresses. It's important to avoid using a deny list, as this method can be easily bypassed through various known evasion techniques.
+
+Developers should also restrict the use of URL schemes, disabling any that are not necessary. For instance, if the application only needs to use HTTP and HTTPS, other protocols should be explicitly blocked.
+
+To prevent information leaks, developers must avoid exposing raw server responses directly to the client. Any data returned from external requests should be carefully processed or sanitized before being shared with the user.
+
+When defending against SSRF attacks, a key strategy is to reduce the level of trust placed in the server. This is often achieved by configuring firewall rules on the receiving end of the request (inbound). However, implementing similar restrictions on outgoing traffic (outbound) is more difficult due to how TCP connections operate.
+
+## Python example
+
+### Vulnerable example
+The snippet below demonstrates a common security issue where user input is not correctly validated, allowing an attacker to make arbitrary requests to any URL. This can lead to server-side request forgery (SSRF) attacks.
+
+```python
+@tools.route("/fetch", methods=['POST'])
+def tools_fetch():
+    url = request.form.get("url")
+    if not url or not 'vulnerableapp.com' in url:
+         return jsonify({'status': 'fail'})
+     res = requests.get(url)
+```
+
+### Secure example
+To prevent SSRF attacks, you should restrict the sources' hosts to trusted hostnames. In this case, we're allowing only URLs that end with .example.com.
+
+```python
+@tools.route("/fetch", methods=['POST'])
+def tools_fetch():
+    parsed_url = urlparse(url)
+    hostname = parsed_url.hostname
+    if not hostname or not hostname.endswith('.example.com'):
+        return jsonify({'status': 'fail'})
+```
