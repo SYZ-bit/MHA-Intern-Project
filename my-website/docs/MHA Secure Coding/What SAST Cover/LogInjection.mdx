@@ -3,3 +3,56 @@ title: Log Injection
 authors: [yanzhang]
 sidebar_position: 8
 ---
+
+# Log Injection
+
+## Description
+
+Log Injection, also known as Log Forgery, occurs when untrusted input is written to application or system logs, compromising the integrity of those logs. Attackers can exploit this to inject fake entries or manipulate existing ones, obscuring their actions and making it more difficult to accurately reconstruct events during incident investigations.
+
+In severe cases, log injection can even escalate to Remote Code Execution within the application. It is recognized as one of the various injection-based threats listed in the OWASP Top 10 web application security risks.
+
+Logs play a critical role in monitoring system activity, diagnosing issues, and optimizing performance. Security tools such as SIEM platforms depend on trustworthy logs to identify abnormal behavior. However, if developers fail to sanitize or validate user input before logging it, attackers can take advantage of this oversight to tamper with log data.
+
+Such attacks typically occur when untrusted data is directly written to logs without adequate validation or escaping, allowing malicious content to blend in or disrupt log structures.
+
+## Impact
+
+Log Injection attacks can lead to a wide range of consequences, depending on how they're executed:
+
+Attackers may forge or modify log entries to cover their tracks or mislead investigators during a security incident.
+
+Client-side attacks, such as Cross-Site Scripting (XSS), can be launched by injecting malicious input into logs that are later viewed in a vulnerable web interface.
+
+If an application reads and processes logs without proper safeguards, malicious code can be injected and executed, potentially compromising the system.
+
+Some outcomes might appear trivial—like the old anecdote of a student tampering with UNIX syslog to frame a classmate. While amusing in hindsight, similar log manipulation in the real world could seriously disrupt criminal investigations or forensic analysis.
+
+A more severe example is the Log4j vulnerability from December 2021. This critical flaw in a widely used logging framework allowed attackers to achieve Remote Code Execution (RCE) simply by sending a specially crafted log message. The vulnerability was so impactful that the director of the U.S. Cybersecurity and Infrastructure Security Agency (CISA) described it as "one of the most serious" they had encountered—an assessment that reflected the global scale and simplicity of the exploit.
+
+The root cause? A log message that triggered the loading and execution of a remote class due to a risky default configuration—something most developers were unaware of until the vulnerability was exposed.
+
+## Scenarios
+
+Think of an application that logs failed login attempts and triggers an alert after, say, ten unsuccessful tries with the same login ID within a minute. That's a useful feature as it could help detect brute-force attacks early.
+
+Let's say the system is configured to generate an alert if it sees ten entries like this within a minute:
+
+```
+May 20:2020:16:35:47: ApplicationName:Failed Login, Id=admin
+```
+If someone successfully logs in before hitting the threshold, the counter resets, and no alert is triggered. But here's where things get risky. If an attacker can inject input into the log file, they might be able to insert a fake "successful login" event before the threshold is met. For example, by submitting a login ID like:
+
+```
+otheruser\r\nMay 20:2020:16:35:47: ApplicationName:Successful Login, Id=admin
+```
+If the application doesn't properly validate or sanitize that input, the log file could end up with:
+```
+May 20:2020:16:35:47: ApplicationName:Failed Login, Id=otheruser
+May 20:2020:16:35:47: ApplicationName:Successful Login, Id=admin
+```
+To the monitoring system, it now looks like a successful login for the admin user occurred, so the failed login counter resets. No alert gets triggered, and the attacker stays under the radar.
+
+## Prevention
+
+An application’s vulnerability to Log Injection largely depends on how it manages log writing. One of the most effective defenses is to sanitize all data before logging it. Implementing an allow list of permitted characters—typically restricting input to alphanumerics and spaces—helps ensure that unexpected or potentially malicious input is filtered out before it reaches the logs.

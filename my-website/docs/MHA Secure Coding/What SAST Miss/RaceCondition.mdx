@@ -21,3 +21,16 @@ Race conditions have existed since the early days of multi-threaded software, an
 
 ## Impact
 
+Race conditions can cause serious issues even without any malicious intent. One of the most severe examples was the Therac-25 radiotherapy machine, where a race condition in the internally developed software—lacking thorough checks—led to patients receiving radiation doses over 100 times higher than intended. This flaw resulted in multiple injuries and at least three deaths.
+
+Even in non-life-threatening systems, race conditions can cause significant disruptions. For instance, in automated deployment or continuous integration (CI) pipelines, a race condition could lead to misconfigured server tools, disrupting service availability and operations.
+
+When exploited by malicious actors, race conditions can lead to even greater consequences. For example, a bug in Dropbox once allowed users to redeem a single 5GB voucher multiple times, granting them far more storage than intended. While this was relatively harmless in that context, similar vulnerabilities in financial systems—like the Reverb gift card exploit—could cause severe damage by undermining the integrity of databases and leading to substantial financial loss.
+
+## Scenarios
+
+## Prevention
+
+Preventing race conditions is entirely the responsibility of developers. Proper implementation of atomic operations and the use of locks where necessary can fully eliminate the risk of such vulnerabilities.
+
+Another effective approach is using shared synchronous variables. By utilizing a global variable to indicate whether a method is already running, subsequent calls can be made to wait until the initial method completes and the variable is reset.

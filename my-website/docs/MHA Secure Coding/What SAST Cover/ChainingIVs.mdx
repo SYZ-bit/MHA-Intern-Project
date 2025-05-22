@@ -3,3 +3,40 @@ title: IV Key Pair
 authors: [yanzhang]
 sidebar_position: 9
 ---
+
+# IV Key Pair
+
+## Description
+
+In cryptography, an Initialization Vector (IV) is a nonce used to introduce randomness into the encryption process. This ensures that even when identical plaintext messages are encrypted, the resulting ciphertexts are different each time.
+
+Unlike encryption keys, IVs typically do not need to be kept secret. What matters is that they are random and unique. In many encryption schemes, the IV is actually transmitted openly as part of the ciphertext.
+
+However, reusing the same IV with the same key across multiple plaintext blocks poses a serious security risk. It enables attackers to compare the resulting ciphertexts and, by making educated guesses about the message contents, potentially uncover sensitive information.
+
+## Impact
+
+The impact of reusing the same IV-Key pair varies depending on the cipher and mode of operation. In Cipher Block Chaining (CBC) and Cipher Feedback (CFB) modes, reusing an IV can leak information from the first ciphertext block and reveal similarities between messages. This leakage can be enough for a skilled attacker to compromise the encryption layer entirely.
+
+In Output Feedback (OFB) and Counter (CTR) modes, IV reuse is even more critical. It effectively breaks encryption by allowing an attacker to XOR two ciphertexts to obtain the XOR of the corresponding plaintexts, which can be exploited to reveal the original messages.
+
+Beyond confidentiality, IV reuse can also open the door to Replay Attacks, where an attacker intercepts a valid encrypted message and resends it. If the application does not properly handle such scenarios, the message may be accepted and processed again, leading to potential misuse.
+
+A historical example of IV-related vulnerability is the Wired Equivalent Privacy (WEP) protocol, standardized in 1999 for 802.11a/b wireless networks. WEP used a 24-bit IV with the RC4 stream cipher. Due to the small IV size, researchers in 2001 demonstrated that by collecting enough ciphertext packets, they could reconstruct the encryption key. Over time, the attack was refined to the point where key recovery could be achieved in just seconds—highlighting the importance of strong, unique IVs in secure encryption.
+
+## Prevention
+
+Preventing attacks that exploit IV-Key reuse hinges on a few fundamental principles:
+
+- Developers must never reuse the same combination of Key and IV for multiple messages.
+
+- IVs must be both sufficiently complex and unique for each encryption operation.
+
+- IVs should be generated using cryptographically secure random number generators.
+
+- IVs must not be derived from the secret key under any circumstances.
+
+
+
+
+

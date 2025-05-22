@@ -19,3 +19,55 @@ While JWTs have become a popular choice for session and token-based authenticati
 If an attacker successfully carries out a Broken JWT attack, they can gain the same level of access as the user they are impersonating. Depending on the user’s privileges and how the application is configured, this could allow the attacker to access all data within the application, obtain administrative control, and potentially compromise the application's confidentiality, integrity, and availability.
 
 ## Scenario 
+
+A JWT has the following form:
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4uZG9lIn0.jxWz0c_9YC3INAlpUGegBtTgmDUA12Krsjtr1P2qgbw
+```
+
+It comprises three parts separated by ., each one encoded in URL-safe Base64. The first part is the header that contains the algorithm and the token type:
+```
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+The second part contains non-sensitive arbitrary data chosen by the web application, for example:
+
+```
+{
+  "username": "john.doe"
+}
+```
+The last part is the signature, that is the hashing of the first two parts using a secret as a key. For example, in the above JWT, the secret is $uper$ecret, thus:
+```
+URLSAFE_BASE64(HMACSHA256('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4uZG9lIn0', '$uper$ecret')) => jxWz0c_9YC3INAlpUGegBtTgmDUA12Krsjtr1P2qgbw
+```
+
+Malicious actors have several attack vectors they can exploit to compromise JSON Web Tokens (JWTs), including:
+
+- None Algorithm Attack: Some vulnerable JWT implementations allow clients to specify the signing algorithm in the token header. If an attacker sets the algorithm to "none," the application may skip signature verification entirely, allowing unauthorized access.
+
+- HMAC Algorithm Attack: This involves changing the algorithm from an asymmetric one (like RS256) to a symmetric one (such as HS256). If the application naively uses the public key as the secret key for HMAC verification, an attacker—who knows the public key—can forge valid tokens.
+
+- Signature Validation Neglect: In some cases, developers may fail to validate the JWT signature altogether, blindly trusting the data provided in the token.
+
+Although JWT authentication is typically handled using trusted third-party libraries, developers are advised against building custom implementations due to the complexity and high risk of security flaws. However, even with established libraries, improper configuration can introduce vulnerabilities.
+
+One of the most common errors is failing to keep the JWT secret confidential or choosing a secret that is weak and easily guessable.
+
+## Prevention
+
+To effectively mitigate algorithm-related vulnerabilities in JWTs, developers should follow these best practices:
+
+- Never rely solely on the JWT header to determine the verification method.
+
+- Understand how different JWT algorithms function and their implications.
+
+- Always use appropriately strong keys with sufficient length for cryptographic operations.
+
+- Choose reputable, well-maintained JWT libraries that are free from known security issues.
+
+When token revocation is not natively supported, implement a token deny list to replicate traditional session management and allow invalidation of compromised tokens.

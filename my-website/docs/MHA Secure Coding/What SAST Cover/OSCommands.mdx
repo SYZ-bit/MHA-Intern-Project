@@ -3,3 +3,45 @@ title: OS Command Injections
 authors: [yanzhang]
 sidebar_position: 10
 ---
+
+# OS Command Injection
+
+## Description
+
+OS Command Injection, also known as Shell Injection, is a vulnerability where an attacker can inject commands that are executed directly by the host operating system. This type of attack occurs due to insufficient input validation, and it is only possible when a web application incorporates user input within operating system calls.
+
+It is important to distinguish OS Command Injection from Code Injection: while OS Command Injection exploits the application’s ability to run system commands, Code Injection allows an attacker to insert and execute their own code within the application. In some cases, Code Injection can escalate to OS Command Injection by leveraging the language’s features.
+
+This vulnerability is not limited to any specific programming language—it can appear anywhere that system shell commands can be invoked. The widespread presence of this issue is partly due to many programming languages, frameworks, and database platforms offering built-in OS command execution capabilities, often for convenience when implementing new features.
+
+Command Injection is one among several injection attack types, which remain highly prevalent and pose serious security risks. OWASP has identified injection attacks as some of the most critical web application vulnerabilities since 2013.
+
+## Impact
+
+Malicious actors can exploit OS Command Injection vulnerabilities to infiltrate the hosting infrastructure, move laterally across connected systems within the organization, run unauthorized commands, and ultimately undermine the confidentiality, integrity, and availability of both the application and its underlying system.
+
+A well-known example that highlights the devastating impact of a successful OS Command Injection attack is the notorious Equifax breach. In this incident, attackers gained access to Equifax’s systems by exploiting a command injection flaw in a widely used web framework.
+
+## Scenarios
+
+OS Command Injection attacks can be carried out on both Windows and Unix systems, and they pose a risk in any programming language that allows commands to be executed through the system shell.
+
+A typical example involves a vulnerable application using the system() function to execute a shell command, where user input is directly concatenated without proper validation. For instance, consider a program that creates a compressed archive by executing the zip command with a filename provided by the user:
+```
+system("zip archive.zip " + filename)
+```
+If the input is not sanitized, an attacker can inject malicious shell characters to append arbitrary commands to the original one.
+
+For example, by supplying the input x; rm important_file, the resulting shell command becomes:
+```
+zip archive.zip x; rm important_file
+```
+Here, the semicolon (;) is used to separate and execute multiple commands in sequence. This allows the attacker to end the legitimate command and inject a second, harmful command that deletes a critical file from the system.
+
+## Prevention
+
+To prevent OS Command Injection, developers should rely on structured approaches that clearly separate code from data.
+
+Crucially, these vulnerabilities can be fully avoided by strictly refraining from making OS command calls within the application layer. In most cases, there are safer alternative methods to achieve the same functionality without relying on shell execution.
+
+However, if using the command shell is absolutely necessary, developers should avoid functions that execute commands as a single string. Instead, they should use functions that accept commands as a list of individual arguments. These functions generally handle proper quoting and input sanitization, reducing the risk of injection attacks.
