@@ -1,12 +1,14 @@
 ---
 title: XML Entity Expansion
 authors: [yanzhang]
-sidebar_position: 7
+sidebar_position: 10
 ---
 
 # XML Entity Expansion
 
 ## Description
+
+XML entities are a way of representing an item of data within an XML document, instead of using the data itself. Various entities are built in to the specification of the XML language. For example, the entities &lt; and &gt; represent the characters < and >. These are metacharacters used to denote XML tags, and so must generally be represented using their entities when they appear within data.
 
 XML External Entity (XXE) attacks target applications that process XML input by exploiting the parser’s ability to handle external entities. By submitting malicious XML data that defines external entities, attackers can take advantage of insecure parser configurations to access files on the server, perform denial-of-service (DoS) attacks, or communicate with internal systems the application can reach.
 
