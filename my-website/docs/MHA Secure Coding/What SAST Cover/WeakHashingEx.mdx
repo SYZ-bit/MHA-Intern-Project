@@ -1,0 +1,50 @@
+---
+title: Weak Hashing Algorithm Example
+authors: [yanzhang]
+sidebar_position: 11
+---
+import { Quiz } from '@site/src/components/QuizComponent';
+
+# Weak Hash Comparison Leads to Malicious File Upload
+
+## Description
+
+Your team has developed a file upload service that uses an antivirus to prevent the uploading of malicious files, such as viruses and ransomware. Discover how using the fragile MD5 cryptographic hashing method can be exploited to bypass the intended file validation control.
+
+It is observe that when a new file is uploaded, the system calculates the MD5 hash and compares it to the hashes of previously uploaded files. If the file's hash matches an existing one, it indicates the file has already been checked, skipping the antivirus control for the new file.
+
+This is designed to avoid repetitive scans of the same file, thus saving on the expensive antivirus check
+
+Even though the two programs are different, they have the same MD5 hash, which was generated using a well-known collision attack.
+
+Run md5sum to confirm that the hashes are the same.
+
+```
+sf@lab:~$ md5sum ~/good ~/evil
+df47de85c9804e7ac888d85ab53650e9  /home/sf/good
+df47de85c9804e7ac888d85ab53650e9  /home/sf/evil
+```
+
+By running sha256sum, you can compute the more robust SHA-256 hash to prove that the files are different.
+
+
+```
+sf@lab:~$ sha256sum ~/good ~/evil
+f21110c7cdc1964437c24de37e73fa27a5545bdab2b18e55e65880fca634c448  /home/sf/good
+9ee8ebceed683c37e366bf3c8ab6e2e619d1fe39a8b763c4c765d644515b744e  /home/sf/evil
+```
+
+What other hashing algorithms in following options are recognized as secure?
+<Quiz 
+  options={[ 
+    'RIPEMD & RIPEMD-128', 
+    'Whirlpool',
+    'PBKDF2', 
+    'SHA-1'
+    
+  ]} 
+  correctAnswer="PBKDF2" 
+  correctReply="Good Job, PBKDF2: A key derivation function endorsed by NIST and is designed with additional protections against brute-force attacks:" 
+  incorrectReply={<>Incorrect, refer to <a href="http://localhost:3000/docs/MHA Secure Coding/What SAST Cover/WeakHashing">this document</a> for more info.</>}
+
+/>

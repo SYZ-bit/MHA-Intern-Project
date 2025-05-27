@@ -3,3 +3,99 @@ title: Unrestricted File Download
 authors: [yanzhang]
 sidebar_position: 5
 ---
+
+# Unrestricted File Download
+
+## Description
+
+Unrestricted File Download vulnerabilities allow attackers to download internal files without proper authorization, potentially exposing sensitive information such as configuration files containing database credentials. 
+Even in less severe cases, these attacks can grant access to specific directory subtrees, leading to cross-user data breaches or exposure of critical configuration and sensitive files.
+
+## Impact
+
+The extent of damage an attacker can inflict through this type of vulnerability largely depends on the sensitivity of the exposed information. For instance, if a developer has mistakenly placed sensitive configuration files within the web root directory, the consequences can be severe. 
+Additionally, like many other common attack vectors, this vulnerability can serve as a foothold, potentially enabling an attacker to escalate privileges and fully compromise the system.
+
+## Scenarios
+
+A common example of this vulnerability involves a web application that dynamically retrieves resources based on a query parameter, with those resources stored in a specific directory on the server. For instance, the URL below fetches the file located at /opt/wwwdata/assets/some-file and may return its contents directly on the webpage:
+
+```
+http://www.vulnerableapp.com/?pageId=some-file
+```
+
+Attackers often exploit such setups using the Directory Traversal technique—also known as the "dot-dot-slash" attack—named after the ../ or ..\ sequences used to navigate up the directory structure and access unauthorized files.
+
+If the application fails to validate or sanitize user input properly, an attacker can escape the intended resource directory and access arbitrary files on the server. For example, the following request could retrieve the sensitive /etc/passwd file on Linux or Unix-based systems:
+
+```
+http://www.vulnerableapp.com/?pageId=../../../../../etc/passwd
+```
+
+## Prevention
+
+Whenever possible, developers should avoid constructing file path strings using user-supplied input. Many application functions can be restructured to achieve the same outcomes without relying on such input, significantly reducing risk.
+
+However, if incorporating user input into file system operations is unavoidable, the following precautions must be taken:
+
+- Validate input against a strict allow list of known, trusted values.
+
+- If allow-listing isn’t feasible, at minimum, ensure the input contains only explicitly permitted characters and patterns.
+
+As an additional security layer, never run server components with root or SYSTEM-level privileges. Doing so could allow an attacker exploiting this vulnerability to access sensitive resources such as cryptographic keys, system files, or the registry. Instead, server processes should run under a restricted user account with minimal access to critical system components.
+
+## Python example
+
+### Vulnerable Example
+
+The snippet below defines a Flask endpoint that serves files from the /opt/wwwdata/assets/ asset folder depending on the file name passed as asset_name.
+```
+asset_folder = '/opt/wwwdata/assets/'
+
+@app.route('/assets')
+def get_asset():
+    asset_name = request.args.get('asset_name')
+    if not asset_name:
+        return 404
+    return send_file(os.path.join(asset_folder, asset_name))
+```
+
+Because the asset_name parameter is user-controlled, it becomes possible to perform a path traversal attack by supplying input like ../../../../../../etc/passwd, allowing navigation outside the intended directory.
+
+This leads to unintended file disclosure, as the operating system resolves the path /opt/wwwdata/assets/../../../../../etc/passwd to its canonical form: /etc/passwd.
+
+### Prevention
+
+To validate that a path does not point to an unintended location, use os.path.abspath() to get the absolute path, and then check that it starts as expected.
+```
+asset_folder = '/opt/wwwdata/assets/'
+
+@app.route('/assets')
+def get_asset():
+    asset_name = request.args.get('asset_name')
+    if not asset_name:
+        return 404
+
+    absolute_file_path = os.path.abspath(os.path.join(asset_folder, asset_name))
+    if not absolute_file_path.startswith(asset_folder):
+        return 403
+
+    return send_file(absolute_file_path)
+```
+
+Alternatively, to sanitize the path, it is possible to use Flask's component werkzeug.secure_filename() to properly sanitize any user-provided input.
+
+```
+from werkzeug.utils import secure_filename
+
+asset_folder = '/opt/wwwdata/assets/'
+
+@app.route('/assets')
+def get_asset():
+    asset_name = request.args.get('asset_name')
+    if not asset_name:
+        return 404
+
+    asset_name = secure_filename(asset_name)
+    return send_file(os.path.join(asset_folder, asset_name))
+```

@@ -31,6 +31,8 @@ Switching to the IDE and observing the edit_post() function, it was shown that t
 ![](/img/BrokenAuthorization4.png)
 
 
+
+
 ``` python
 def edit_post(request, pk):
     post = get_object_or_404(Post, pk=pk, author=request.user)

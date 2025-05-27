@@ -118,3 +118,47 @@ By exploiting SSRF, attackers can pivot to internal or backend systems that are 
 
 ## Prevention
 
+Disabling support for Document Type Definitions (DTDs) is one of the most effective ways to prevent XXE attacks.
+
+Whenever feasible, it's best to use simpler data formats like JSON. For nearly a decade, JSON has been preferred over XML due to its lightweight structure and more modern design.
+
+However, exceptions do exist. In scenarios where disabling DTDs is not an option due to business requirements, and switching to a different format isn’t viable, developers must implement additional safeguards.
+
+If the entire XML document comes from an untrusted source, it’s typically not possible to sanitize or validate potentially malicious input embedded in the DTD's system identifiers. In such cases, the XML processor should be explicitly configured to use a local, static DTD and block any external or embedded DTDs declared within incoming XML documents.
+
+## Python example
+
+Python includes a built-in XML parser (xml) that is suitable for basic XML parsing and manipulation. However, it lacks support for advanced features such as XML validation. Although it does not support external entities—reducing the risk of XXE attacks—it may still be susceptible to other XML-related vulnerabilities.
+
+For more advanced XML processing needs, developers often use third-party libraries like lxml. Unlike the native parser, lxml has external entity parsing enabled by default, which can introduce security risks if not properly managed.
+
+### Vulnerable example using lxml
+
+```
+@tools.route("/is_xml", methods=['POST'])
+def tools_is_xml():
+    try:
+        # read data from POST
+        xml_raw = request.files['xml'].read()
+
+        # create the XML parser
+        parser = etree.XMLParser()
+
+        # parse the XML data
+        root = etree.fromstring(xml_raw, parser)
+
+        # return a string representation
+        xml = etree.tostring(root, pretty_print=True, encoding='unicode')
+        return jsonify({'status': 'yes', 'data': xml})
+    except Exception as e:
+        return jsonify({'status': 'no', 'message': str(e)})
+```
+When the etree.fromstring method is invoked, it parses and expands the external entities. For example, when uploading the following XML document:
+
+```
+<!DOCTYPE d [<!ENTITY e SYSTEM "file:///etc/passwd">]><t>&e;</t>
+```
+
+The entity &e; is expanded with the contents of the local /etc/passwd file, resulting in the disclosure of the file's contents.
+
+This vulnerability can be avoided by setting the resolve_entities=False argument when creating the etree.XMLParser. If only simple XML data processing is required, use the native parser.

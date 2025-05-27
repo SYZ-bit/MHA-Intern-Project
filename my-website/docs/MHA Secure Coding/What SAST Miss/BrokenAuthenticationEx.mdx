@@ -1,0 +1,67 @@
+---
+title: Broken Authentication Example
+authors: [yanzhang]
+sidebar_position: 2
+---
+import { Quiz } from '@site/src/components/QuizComponent';
+
+# Locate the Missing Authentication Control 
+
+## Scenario
+
+The Python web application in this Lab lacks authentication on an endpoint, thus exposing it to any malicious actor who stumbles across it.
+
+
+```
+from flask import Blueprint, render_template, jsonify, redirect, session, request
+import sqlite3
+
+messageboard = Blueprint('messageboard', __name__)
+
+
+@messageboard.route("/")
+def messageboard_home():                                                                            line 5
+        
+    conn = sqlite3.connect('db.sqlite')
+    c = conn.cursor()
+
+    sql_statement = "SELECT * FROM messages"                                                        line 8
+
+    messages = c.execute(sql_statement)
+    return render_template('messageboard.html', messages=messages)
+
+
+@messageboard.route("/post", methods=['POST'])
+def messageboard_post():
+    user = session.get('logged_user')                                                               line 12
+    if not user:
+        return redirect("/login", code=302)
+
+    if not request.form.get("anti_csrf_token") == session['csrf_token']:                            line 14
+        return 'Error, wrong anti-csrf token', 404
+
+    values = {'user': request.form.get('user'), 'message': request.form.get('message')}
+
+    conn = sqlite3.connect('db.sqlite')
+    c = conn.cursor()
+
+    sql_statement = 'INSERT INTO messages VALUES (:user, :message)'
+    c.execute(sql_statement, values)
+    conn.commit()
+    return redirect("/messageboard", code=302)
+```
+
+From the above code snippet, which of these lines of code snippet is not properly authenticated?
+<Quiz 
+  options={[ 
+    'Line 5', 
+    'Line 8',
+    'Line 12', 
+    'Line 14'
+    
+  ]} 
+  correctAnswer="Line 5" 
+  correctReply="Good Job, you have located the Broken Authentication" 
+  incorrectReply={<>Incorrect, refer to <a href="http://localhost:3000/docs/MHA Secure Coding/What SAST Miss/BrokenAuthentication">this document</a> for more info.</>}
+
+/>

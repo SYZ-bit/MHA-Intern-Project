@@ -8,7 +8,7 @@ sidebar_position: 4
 
 ## Description
 
-A Race Condition, often referred to as a Time of Check to Time of Use (TOCTOU) issue, is a vulnerability that takes advantage of the sequence in which an application performs operations, particularly in multi-threaded environments. This flaw can be exploited when multiple threads access and manipulate shared resources without proper coordination, allowing an attacker to interfere with those operations for personal gain.
+A **Race Condition**, often referred to as a Time of Check to Time of Use (TOCTOU) issue, is a vulnerability that takes advantage of the sequence in which an application performs operations, particularly in multi-threaded environments. This flaw can be exploited when multiple threads access and manipulate shared resources without proper coordination, allowing an attacker to interfere with those operations for personal gain.
 
 Race conditions typically result from poor handling of concurrency, where developers allow simultaneous access to shared resources without appropriate safeguards. For example, when multiple threads are used to manage incoming connections but are allowed unrestricted access to a single resource, vulnerabilities can arise. However, not every race condition leads to harm, so it's important to prioritize which ones need fixing based on their potential impact.
 
