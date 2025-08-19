@@ -28,6 +28,8 @@ In the Stored XSS attack, the injected script is stored on the target applicatio
 
 ### DOM-based XSS
 
+DOM-based XSS vulnerabilities typically arise when JavaScript on a webpage takes user-supplied input from a source like document.location and passes it to a function that can execute code, such as innerHTML. In a typical attack, the malicious payload is delivered to the victim via an indirect method—such as an email or a different website—tricking them into clicking a harmful link. The attack is executed entirely on the client side, with the malicious code running instantly in the user’s browser.
+
 ## Impact
 
 Cross site scripting attacks can have devastating consequences. Code injected into a vulnerable application can exfiltrate data or install malware on the user’s machine. Attackers can masquerade as authorized users via session cookies, allowing them to perform any action allowed by the user account.
@@ -43,4 +45,44 @@ XSS attacks can be mitigated by performing appropriate server-side validation an
 - Exact Match: Only accept values from a finite list of known values.
 - Allow list: If a list of all the possible values can't be created, accept only known good data and reject all unexpected input.
 - Deny list: If an allow-list approach is not feasible (on free-form text areas, for example), reject all known bad values.
+
 ### Output Encoding
+
+Output encoding is a technique used to transform untrusted input into a safe format so that it is displayed as data in the browser rather than executed as code. This encoding is applied when data is sent from the application to a downstream component. The table below outlines various downstream contexts where untrusted input might appear, along with the appropriate encoding method:
+
+| Context         | Code Example                                                                                 | Encoding Method           |
+|----------------|----------------------------------------------------------------------------------------------|---------------------------|
+| HTML Body       | `<div>USER-CONTROLLED-DATA</div>`                                                            | HTML Encoding             |
+| HTML Attribute  | `<input type="text" value="USER-CONTROLLED-DATA" />`                                         | HTML Attribute Encoding   |
+| URL Parameter   | `<a href="/search?value=USER-CONTROLLED-DATA">Search</a>`                                    | URL Encoding              |
+| CSS             | `<div style="width: USER-CONTROLLED-DATA;">Selection</div>`                                  | CSS Hex Encoding          |
+| JavaScript      | `<script>var lang = 'USER-CONTROLLED-DATA';</script>, <script>setLanguage('USER-CONTROLLED-DATA');</script>` | JavaScript Encoding       |
+
+
+The chart below outlines essential output encoding techniques used to prevent Cross-Site Scripting (XSS) attacks:
+
+| Encoding Type           | Encoding Mechanism                                                                                                                                                                                        |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| HTML Entity Encoding    | Convert `&` to `&amp;`<br />Convert `<` to `&lt;`<br />Convert `>` to `&gt;`<br />Convert `"` to `&quot;`<br />Convert `'` to `&#x27;`<br />Convert `/` to `&#x2F;`                                      |
+| HTML Attribute Encoding | Escape all non-alphanumeric characters using the format `&#xHH;`, including spaces. (`HH` is the character’s hex value)                                                                                  |
+| URL Encoding            | Use percent encoding (e.g., `%20` for space) to encode **only** URL parameter values. Avoid encoding entire URLs or path segments.                                                                       |
+| JavaScript Encoding     | Escape non-alphanumeric characters using the Unicode format `\\uXXXX`, where `XXXX` is the character’s hex value.                                                                                        |
+| CSS Hex Encoding        | Use CSS escaping like `\\XX` or `\\XXXXXX`. If the next character continues the escape sequence:<br />-Add a space after the escape, or<br />- Use full-length hex escapes with padding
+
+
+### Defense in Depth
+
+#### Content Security Policy (CSP)
+Content Security Policy (CSP) is a browser-level security feature that allows web applications to define a whitelist of trusted sources for loading client-side resources such as JavaScript, CSS, and images. By using a specific HTTP header, CSP tells the browser to only execute or render content from those explicitly allowed sources.
+
+```
+Content-Security-Policy: default-src: 'self'; script-src: 'self' static.domain.tld
+```
+
+The above policy instructs the browser to load all resources from the site's own origin ('self') and only allow JavaScript files from the same origin and static.domain.tld. For more information on configuring CSP, refer to the official documentation or a detailed guide.
+
+#### Content Types
+To avoid browsers misinterpreting non-HTML HTTP responses as executable HTML or JavaScript, it's important to always include a correct Content-Type header in the HTTP response. This ensures the browser handles the content as intended, reducing the risk of content-type-based attacks.
+
+#### Modern Frameworks
+Modern JavaScript frameworks such as Angular and React, as well as server-side templating engines like Go Templates, come with built-in mechanisms to prevent Reflected Cross-Site Scripting (XSS). Leveraging these frameworks properly can significantly reduce the risk of introducing XSS vulnerabilities.

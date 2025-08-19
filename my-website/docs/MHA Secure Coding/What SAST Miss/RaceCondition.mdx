@@ -29,6 +29,28 @@ When exploited by malicious actors, race conditions can lead to even greater con
 
 ## Scenarios
 
+A basic example of a race condition occurs when one method is executing, and another method changes a shared variable in the middle of that execution. Consider a function that subtracts 5 from a number x:
+
+```
+def minus_five(x):
+    if x > 5:  # Some arbitrary condition
+        y = x - 5
+```
+
+If, between the check x > 5 and the subtraction y = x - 5, another method modifies x to a value less than or equal to 5, the program could enter an invalid or unintended state.
+
+This issue can be resolved by using locks to prevent concurrent modifications during the critical section:
+
+```
+# Acquire lock here
+def minus_five(x):
+    if x > 5:  # Some arbitrary condition
+        y = x - 5
+# Release lock here once done
+```
+
+**Locks** are synchronization tools used in programming to prevent multiple threads or processes from accessing shared resources simultaneously. By locking a critical section of code, they ensure that only one thread can execute that part at a time, avoiding conflicts and race conditions. Once the operation is complete, the lock is released, allowing others to proceed safely.
+
 ## Prevention
 
 Preventing race conditions is entirely the responsibility of developers. Proper implementation of atomic operations and the use of locks where necessary can fully eliminate the risk of such vulnerabilities.

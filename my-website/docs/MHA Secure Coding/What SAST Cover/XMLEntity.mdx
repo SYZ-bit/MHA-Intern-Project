@@ -40,7 +40,7 @@ POST http://www.vulnerableapp.com/xml HTTP/1.1
 <?xml version="1.0" encoding="ISO-8859-1"?> 
 <!DOCTYPE foo [
   <!ELEMENT foo ANY>
-  <!ENTITY bar "SecureFlag ">
+  <!ENTITY bar "MHA ">
   <!ENTITY t1 "&bar;&bar;">
   <!ENTITY t2 "&t1;&t1;&t1;&t1;">
   <!ENTITY t3 "&t2;&t2;&t2;&t2;&t2;">
@@ -52,7 +52,7 @@ POST http://www.vulnerableapp.com/xml HTTP/1.1
 ```
 HTTP/1.0 200 OK
 
-Join SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlagSecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag SecureFlag (repeated many times)
+Join MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA MHA (repeated many times)
 ```
 
 This recursive expansion can exhaust system resources, crashing or slowing down the application.
