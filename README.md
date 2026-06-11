@@ -85,6 +85,32 @@ MHA-Intern-Project/
                 └── UnrestrictedFileDownload.mdx
 ```
 
+## Local Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run start
+```
+
+Build the site:
+
+```bash
+npm run build
+```
+
+Serve the production build locally:
+
+```bash
+npm run serve
+```
+
 ## Technology Stack
 
 * Docusaurus
@@ -115,5 +141,4 @@ This repository is intended for educational and cybersecurity awareness purposes
 Cybersecurity & Software Development Projects
 
 GitHub: https://github.com/SYZ-bit
-# MHA-Intern-Project
- 
+
