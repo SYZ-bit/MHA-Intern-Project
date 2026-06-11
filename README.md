@@ -21,7 +21,7 @@ While SAST tools are effective at identifying many coding-related vulnerabilitie
 
 This section focuses on vulnerabilities that can commonly be detected through static code analysis.
 
-📂 Folder: [What SAST Cover](./docs/MHA%20Secure%20Coding/What%20SAST%20Cover)
+📂 Folder: [What SAST Cover](./my-website/docs/MHA%20Secure%20Coding/What%20SAST%20Cover)
 
 Topics include:
 
@@ -42,7 +42,7 @@ Several modules also include quizzes and practical exercises to reinforce learni
 
 This section focuses on vulnerabilities that typically require manual review, business logic analysis, threat modelling, or dynamic testing.
 
-📂 Folder: [What SAST Miss](./docs/MHA%20Secure%20Coding/What%20SAST%20Miss)
+📂 Folder: [What SAST Miss](./my-website/docs/MHA%20Secure%20Coding/What%20SAST%20Miss)
 
 Topics include:
 
